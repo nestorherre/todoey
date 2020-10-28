@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todoey/models/databasehelper.dart';
 import 'package:todoey/models/task.dart';
 
 class AddTaskScreen extends StatefulWidget {
@@ -11,6 +12,16 @@ class AddTaskScreen extends StatefulWidget {
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
   String taskText;
+  final dbHelper = DatabaseHelper.instance;
+
+  void _insert(Task task) async {
+    // row to insert
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnName: task.name,
+      DatabaseHelper.columnIsDone: task.isDone ? 1 : 0,
+    };
+    await dbHelper.insert(row);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +57,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               height: 20.0,
             ),
             FlatButton(
-              onPressed: () {
-                widget.addTaskCallback(
+              onPressed: () async {
+                // widget.addTaskCallback(
+                //   Task(name: taskText),
+                // );
+                _insert(
                   Task(name: taskText),
                 );
+                int newTaskID = await dbHelper.queryRowCount();
+                widget.addTaskCallback(Task(id: newTaskID, name: taskText));
                 Navigator.pop(context);
               },
               color: Colors.lightBlueAccent,

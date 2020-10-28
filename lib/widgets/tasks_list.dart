@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
+import 'package:todoey/models/databasehelper.dart';
 import 'package:todoey/models/task.dart';
 import 'package:todoey/widgets/task_tile.dart';
 
@@ -13,6 +14,19 @@ class TasksList extends StatefulWidget {
 }
 
 class _TasksListState extends State<TasksList> {
+  final dbHelper = DatabaseHelper.instance;
+
+  void _updateCheckbox(Task task) async {
+    print(task.isDone.toString());
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnId: task.id,
+      DatabaseHelper.columnName: task.name,
+      DatabaseHelper.columnIsDone: task.isDone ? 1 : 0,
+    };
+    final rowsAffected = await dbHelper.update(row);
+    print('updated $rowsAffected row(s)');
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -27,6 +41,7 @@ class _TasksListState extends State<TasksList> {
             checkboxCallback: (checkboxState) {
               setState(() {
                 widget.tasks[index].toggleDone();
+                _updateCheckbox(widget.tasks[index]);
               });
             },
           ),

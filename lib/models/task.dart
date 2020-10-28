@@ -1,5 +1,6 @@
 class Task {
-  Task({this.name, this.isDone = false});
+  Task({this.id, this.name, this.isDone = false});
+  final int id;
   final String name;
   bool isDone;
 

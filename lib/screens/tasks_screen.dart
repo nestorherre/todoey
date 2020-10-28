@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:toast/toast.dart';
+import 'package:todoey/models/databasehelper.dart';
 import 'package:todoey/models/task.dart';
 import 'package:todoey/widgets/tasks_list.dart';
 
@@ -13,6 +14,33 @@ class TasksScreen extends StatefulWidget {
 
 class _TasksScreenState extends State<TasksScreen> {
   List<Task> tasks = [];
+  final dbHelper = DatabaseHelper.instance;
+
+  void getTasks() async {
+    final allRows = await dbHelper.queryAllRows();
+    setState(() {
+      allRows.forEach(
+        (row) => tasks.add(
+          Task(
+            id: row['_id'],
+            name: row['name'],
+            isDone: row['is_done'] == 1 ? true : false,
+          ),
+        ),
+      );
+    });
+  }
+
+  void deleteTask(int taskID) async {
+    final rowDeleted = await dbHelper.delete(taskID);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getTasks();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,6 +51,11 @@ class _TasksScreenState extends State<TasksScreen> {
           showModalBottomSheet(
             context: context,
             builder: (context) => AddTaskScreen(
+              // addTaskCallback: (value) {
+              //   setState(() {
+              //     tasks.add(value);
+              //   });
+              // },
               addTaskCallback: (value) {
                 setState(() {
                   tasks.add(value);
@@ -86,6 +119,7 @@ class _TasksScreenState extends State<TasksScreen> {
                   tasks: tasks,
                   longPressCallback: (index) {
                     setState(() {
+                      deleteTask(tasks[index].id);
                       Toast.show("Deleted '${tasks[index].name}'", context,
                           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                       tasks.removeAt(index);

@@ -1,5 +1,5 @@
 # Todoey
 
-App que permite agregar tareas a realizar y marcarlas como completas/incompletas, además de permitir borrado. Fue Realizada en Flutter, no cuenta con persistencia de datos por el momento.
+App que permite agregar tareas a realizar y marcarlas como completas/incompletas, además de permitir borrado. Fue Realizada en Flutter, cuenta con persistencia de data utilizando sqflite.
 
 ![](todoey.gif)
